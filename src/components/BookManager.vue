@@ -49,7 +49,7 @@
             <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
             <el-button type="text" size="small">编辑</el-button>
             <!-- 未归还的书籍不能删除 删除要有确定操作 -->
-            <el-button type="text" size="small">删除</el-button>
+            <el-button type="text" size="small" @click="deleteTableData(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -161,6 +161,24 @@
           }
         },
         methods: {
+          deleteTableData (row) {
+            console.log(row)
+            this.$confirm('永久删除书籍, 是否继续?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              });
+            }).catch(() => {
+              this.$message({
+                type: 'info',
+                message: '已取消删除'
+              })
+            })
+          },
           // 点击分页按钮
           currentChange (e) {
             this.searchdata.pageIndex = e
