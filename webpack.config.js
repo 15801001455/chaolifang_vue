@@ -80,12 +80,13 @@ module.exports = {
     extensions: ['*', '.js', '.vue', '.json']
   },
   devServer: {
-    open: false,
     historyApiFallback: true,
     noInfo: true,
     overlay: true,
     host: 'localhost',//target host
-    port: 8080,
+    port: 8084,
+    quiet: true,
+    open: false,
     //proxy:{'/api':{}},代理器中设置/api,项目中请求路径为/api的替换为target
     proxy:{
       '/api':{
