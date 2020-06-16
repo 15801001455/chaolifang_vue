@@ -46,8 +46,10 @@
           label="操作"
           width="150">
           <template slot-scope="scope">
+            <!--
             <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
-            <el-button type="text" size="small">编辑</el-button>
+            -->
+            <el-button @click="showEdit(scope.row)" type="text" size="small">编辑</el-button>
             <!-- 未归还的书籍不能删除 删除要有确定操作 -->
             <el-button type="text" size="small" @click="deleteTableData(scope.row)">删除</el-button>
           </template>
@@ -81,6 +83,24 @@
           </el-form-item>
         </el-form>
       </el-dialog>
+      <!-- 弹出层 编辑图书 -->
+      <el-dialog title="编辑书籍" :visible.sync="editBookVisible" :before-close="closeEditForm" :close-on-click-modal="false">
+        <el-form :model="editForm" :rules="rules" ref="editForm" label-width="100px">
+          <el-form-item label="编号" prop="id">
+            <el-input v-model="editForm.id" :disabled="true"></el-input>
+          </el-form-item>
+          <el-form-item label="名称" prop="name">
+            <el-input v-model="editForm.name"></el-input>
+          </el-form-item>
+          <el-form-item label="备注" prop="mark">
+            <el-input type="textarea" v-model="editForm.mark"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="submitForm('editForm')">保存</el-button>
+            <el-button @click="closeEditForm">关闭</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
     </div>
 </template>
 
@@ -93,6 +113,7 @@
             recordsTotal: undefined,
             tableData: [],
             dialogTableVisible: false,
+            editBookVisible: false,
             searchdata: {
               borrowPerson: '',
               borrowStatus: undefined,
@@ -134,6 +155,15 @@
               name: '',
               mark: ''
             },
+            editForm: {
+              id: '',
+              name: '',
+              mark: '',
+              borrowStatus: undefined,
+              borrowPerson: '',
+              borrowTime: '',
+              returnTime: ''
+            },
             rules: {
               id: [
                 { required: true, message: '请输入书籍编号', trigger: 'blur' },
@@ -162,18 +192,34 @@
         },
         methods: {
           deleteTableData (row) {
-            console.log(row)
-            this.$confirm('永久删除书籍, 是否继续?', '提示', {
+            console.log(row.id)
+            const that = this
+            that.$confirm('永久删除书籍, 是否继续?', '提示', {
               confirmButtonText: '确定',
               cancelButtonText: '取消',
               type: 'warning'
             }).then(() => {
-              this.$message({
-                type: 'success',
-                message: '删除成功!'
-              });
+              axios.get("/api/bookManager/deleteBookManager",{
+                params:{
+                  id:row.id
+                }})
+                .then(res => {
+                  if (res.data.result === 'ok') {
+                    that.$message({
+                      message: '删除成功',
+                      type: 'success',
+                      onClose: function (msg) {
+                        that.searchdata.pageIndex = 1
+                        that.getTableData()
+                      }
+                    })
+                  }else if(res.data.result === 'not_ok') {
+                    that.$message.error(res.data.message)
+                  }
+                })
+                .catch(error => console.log(error))
             }).catch(() => {
-              this.$message({
+              that.$message({
                 type: 'info',
                 message: '已取消删除'
               })
@@ -190,10 +236,21 @@
               this.dialogTableVisible = false
               this.getTableData()
           },
+          // 关闭编辑界面
+          closeEditForm () {
+            this.$refs['editForm'].resetFields();
+            this.editBookVisible = false
+          },
           // 弹出新增页面
           showAdd () {
             // this.$refs['addForm'].resetFields(); 这一句不能加 因为没有这个变量
             this.dialogTableVisible = true
+          },
+          showEdit (row) {
+            this.editForm.id = row.id
+            this.editForm.name = row.name
+            this.editForm.mark = row.mark
+            this.editBookVisible = true
           },
           addBook () {
             const that = this
@@ -219,9 +276,6 @@
                 return false;
               }
             });
-          },
-          resetForm(formName) {
-            this.$refs[formName].resetFields();
           },
           submitData () {
             const that = this
