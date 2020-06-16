@@ -25,6 +25,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitData">查询</el-button>
+          <el-button type="primary" @click="showAdd">新增</el-button>
         </el-form-item>
       </el-form>
       <el-table :data="tableData">
@@ -57,15 +58,28 @@
         :hide-on-single-page="true"
         layout="prev, pager, next"
         :page-size="searchdata.pageSize"
-        :total="recordsTotal">
+        :total="recordsTotal"
+        @current-change="currentChange"
+        >
       </el-pagination>
-
-      <el-dialog title="书籍操作" :visible.sync="dialogTableVisible">
-        <el-table>
-          <el-table-column property="date" label="日期" width="150"></el-table-column>
-          <el-table-column property="name" label="姓名" width="200"></el-table-column>
-          <el-table-column property="address" label="地址"></el-table-column>
-        </el-table>
+      <!-- 弹出层 新增图书 -->
+      <el-dialog title="新增书籍" :visible.sync="dialogTableVisible" :before-close="closeForm" :close-on-click-modal="false">
+        <el-form :model="addForm" :rules="rules" ref="addForm" label-width="100px">
+          <el-form-item label="编号" prop="id">
+            <el-input v-model="addForm.id"></el-input>
+          </el-form-item>
+          <el-form-item label="名称" prop="name">
+            <el-input v-model="addForm.name"></el-input>
+          </el-form-item>
+          <el-form-item label="备注" prop="mark">
+            <el-input type="textarea" v-model="addForm.mark"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="submitForm('addForm')">立即创建</el-button>
+            <el-button @click="resetForm('addForm')">重置</el-button>
+            <el-button @click="closeForm">关闭</el-button>
+          </el-form-item>
+        </el-form>
       </el-dialog>
     </div>
 </template>
@@ -83,7 +97,7 @@
               borrowPerson: '',
               borrowStatus: undefined,
               pageIndex: 1,
-              pageSize: 20,
+              pageSize: 10,
               borrowTimeStart: '',
               borrowTimeEnd: ''
             },
@@ -115,9 +129,82 @@
                 }
               }]
             },
+            addForm: {
+              id: '',
+              name: '',
+              mark: ''
+            },
+            rules: {
+              id: [
+                { required: true, message: '请输入书籍编号', trigger: 'blur' },
+              ],
+              name: [
+                { required: true, message: '请输入书籍名称', trigger: 'blur' },
+                { min: 1, max: 50, message: '名称过长', trigger: 'blur' }
+              ],
+              date1: [
+                { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
+              ],
+              date2: [
+                { type: 'date', required: true, message: '请选择时间', trigger: 'change' }
+              ],
+              type: [
+                { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
+              ],
+              resource: [
+                { required: true, message: '请选择活动资源', trigger: 'change' }
+              ],
+              desc: [
+                { required: true, message: '请填写活动形式', trigger: 'blur' }
+              ]
+            }
           }
         },
         methods: {
+          // 点击分页按钮
+          currentChange (e) {
+            this.searchdata.pageIndex = e
+            this.getTableData()
+          },
+          // 关闭新增界面
+          closeForm () {
+              this.$refs['addForm'].resetFields();
+              this.dialogTableVisible = false
+              this.getTableData()
+          },
+          // 弹出新增页面
+          showAdd () {
+            // this.$refs['addForm'].resetFields(); 这一句不能加 因为没有这个变量
+            this.dialogTableVisible = true
+          },
+          addBook () {
+            const that = this
+            axios.post("/api/bookManager/addBookManager",that.addForm)
+              .then(res => {
+                if (res.data.result === 'ok') {
+                  that.$message({
+                    message: '新增消息',
+                    type: 'success'
+                  });
+                }else if(res.data.result === 'not_ok') {
+                  this.$message.error(res.data.message);
+                }
+              })
+              .catch(error => console.log(error))
+          },
+          submitForm(formName) {
+            const that = this
+            this.$refs[formName].validate((valid) => {
+              if (valid) {
+                that.addBook()
+              } else {
+                return false;
+              }
+            });
+          },
+          resetForm(formName) {
+            this.$refs[formName].resetFields();
+          },
           submitData () {
             const that = this
             if (that.borrowTime.length > 0) {
@@ -125,6 +212,7 @@
               that.searchdata.borrowTimeEnd = that.borrowTime[1]
             }
             console.log(that.searchdata)
+            that.searchdata.pageIndex = 1
             that.getTableData()
           },
           handleClick (row) {
@@ -136,8 +224,8 @@
             axios.post("/api/bookManager/getBookManagerList",that.searchdata)
               .then(res => {
                 if (res.data.result === 'ok') {
-                  this.tableData = res.data.data
-                  this.recordsTotal = res.data.recordsTotal
+                  that.tableData = res.data.data
+                  that.recordsTotal = res.data.recordsTotal
                 }
               })
               .catch(error => console.log(error))
