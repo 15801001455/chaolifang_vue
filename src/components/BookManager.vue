@@ -68,7 +68,7 @@
       <el-dialog title="新增书籍" :visible.sync="dialogTableVisible" :before-close="closeForm" :close-on-click-modal="false">
         <el-form :model="addForm" :rules="rules" ref="addForm" label-width="100px">
           <el-form-item label="编号" prop="id">
-            <el-input v-model="addForm.id"></el-input>
+            <el-input v-model="addForm.id" maxlength="10"></el-input>
           </el-form-item>
           <el-form-item label="名称" prop="name">
             <el-input v-model="addForm.name"></el-input>
@@ -92,11 +92,38 @@
           <el-form-item label="名称" prop="name">
             <el-input v-model="editForm.name"></el-input>
           </el-form-item>
+          <el-form-item label="借阅人" prop="borrowPerson">
+            <el-input v-model="editForm.borrowPerson"></el-input>
+          </el-form-item>
+          <el-form-item label="状态" prop="borrowStatus">
+            <el-select v-model="editForm.borrowStatus" placeholder="状态">
+              <el-option label="未出借" value="1"></el-option>
+              <el-option label="已出借" value="2"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="借阅时间">
+            <el-date-picker
+              v-model="editForm.borrowTime"
+              align="right"
+              type="date"
+              placeholder="选择日期"
+              :picker-options="pickerOptionsForEditBorrow">
+            </el-date-picker>
+          </el-form-item>
+          <el-form-item label="归还时间">
+            <el-date-picker
+              v-model="editForm.returnTime"
+              align="right"
+              type="date"
+              placeholder="选择日期"
+              :picker-options="pickerOptionsForEditReturn">
+            </el-date-picker>
+          </el-form-item>
           <el-form-item label="备注" prop="mark">
             <el-input type="textarea" v-model="editForm.mark"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="submitForm('editForm')">保存</el-button>
+            <el-button type="primary" @click="submitEditForm('editForm')">保存</el-button>
             <el-button @click="closeEditForm">关闭</el-button>
           </el-form-item>
         </el-form>
@@ -150,6 +177,37 @@
                 }
               }]
             },
+            pickerOptionsForEditBorrow: {
+              /*disabledDate(time) {
+                return time.getTime() > Date.now();
+              },*/
+              shortcuts: [{
+                text: '今天',
+                onClick(picker) {
+                  picker.$emit('pick', new Date());
+                }
+              }, {
+                text: '昨天',
+                onClick(picker) {
+                  const date = new Date();
+                  date.setTime(date.getTime() - 3600 * 1000 * 24);
+                  picker.$emit('pick', date);
+                }
+              }]
+            },
+            pickerOptionsForEditReturn: {
+              /*disabledDate(time) {
+                return time.getTime() > Date.now();
+              },*/
+              shortcuts: [{
+                text: '明天',
+                onClick(picker) {
+                  const date = new Date();
+                  date.setTime(date.getTime() + 3600 * 1000 * 24);
+                  picker.$emit('pick', date);
+                }
+              }]
+            },
             addForm: {
               id: '',
               name: '',
@@ -159,7 +217,7 @@
               id: '',
               name: '',
               mark: '',
-              borrowStatus: undefined,
+              borrowStatus: '',
               borrowPerson: '',
               borrowTime: '',
               returnTime: ''
@@ -238,7 +296,6 @@
           },
           // 关闭编辑界面
           closeEditForm () {
-            this.$refs['editForm'].resetFields();
             this.editBookVisible = false
           },
           // 弹出新增页面
@@ -247,9 +304,13 @@
             this.dialogTableVisible = true
           },
           showEdit (row) {
+            debugger
             this.editForm.id = row.id
             this.editForm.name = row.name
             this.editForm.mark = row.mark
+            this.editForm.borrowPerson = row.borrowPerson
+            console.log(typeof(row.borrowStatus)) // number类型
+            this.editForm.borrowStatus = row.borrowStatus.toString() // 这里是个大坑 项目中也经常遇到, 如果类型和选择下拉框类型不符合，弹出的编辑界面下拉框是不会赋值的
             this.editBookVisible = true
           },
           addBook () {
@@ -267,6 +328,23 @@
               })
               .catch(error => console.log(error))
           },
+          editBook () {
+            const that = this
+            axios.post("/api/bookManager/updateBookManager",that.editForm)
+              .then(res => {
+                if (res.data.result === 'ok') {
+                  that.$message({
+                    message: '更新成功',
+                    type: 'success'
+                  })
+                  that.editBookVisible = false
+                  that.getTableData()
+                }else if(res.data.result === 'not_ok') {
+                  this.$message.error(res.data.message)
+                }
+              })
+              .catch(error => console.log(error))
+          },
           submitForm(formName) {
             const that = this
             this.$refs[formName].validate((valid) => {
@@ -277,11 +355,24 @@
               }
             });
           },
+          submitEditForm(formName) {
+            const that = this
+            this.$refs[formName].validate((valid) => {
+              if (valid) {
+                that.editBook()
+              } else {
+                return false;
+              }
+            });
+          },
           submitData () {
             const that = this
-            if (that.borrowTime.length > 0) {
+            if (that.borrowTime && that.borrowTime.length > 0) {
               that.searchdata.borrowTimeStart = that.borrowTime[0]
               that.searchdata.borrowTimeEnd = that.borrowTime[1]
+            }else {
+              that.searchdata.borrowTimeStart = ''
+              that.searchdata.borrowTimeEnd = ''
             }
             console.log(that.searchdata)
             that.searchdata.pageIndex = 1
