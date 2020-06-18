@@ -92,7 +92,7 @@
           <el-form-item label="名称" prop="name">
             <el-input v-model="editForm.name"></el-input>
           </el-form-item>
-          <el-form-item label="借阅人" prop="borrowPerson">
+          <el-form-item label="借阅人" prop="borrowPerson" v-if="editForm.borrowStatus === '2'">
             <el-input v-model="editForm.borrowPerson"></el-input>
           </el-form-item>
           <el-form-item label="状态" prop="borrowStatus">
@@ -101,7 +101,7 @@
               <el-option label="已出借" value="2"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="借阅时间">
+          <el-form-item label="借阅时间" prop="borrowTime" v-if="editForm.borrowStatus === '2'">
             <el-date-picker
               v-model="editForm.borrowTime"
               align="right"
@@ -110,7 +110,7 @@
               :picker-options="pickerOptionsForEditBorrow">
             </el-date-picker>
           </el-form-item>
-          <el-form-item label="归还时间">
+          <el-form-item label="归还时间" prop="returnTime" v-if="editForm.borrowStatus === '2'">
             <el-date-picker
               v-model="editForm.returnTime"
               align="right"
@@ -230,8 +230,8 @@
                 { required: true, message: '请输入书籍名称', trigger: 'blur' },
                 { min: 1, max: 50, message: '名称过长', trigger: 'blur' }
               ],
-              date1: [
-                { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
+              borrowPerson: [
+                { required: true, message: '请填写借阅人', trigger: 'blur' }
               ],
               date2: [
                 { type: 'date', required: true, message: '请选择时间', trigger: 'change' }
@@ -311,6 +311,8 @@
             this.editForm.borrowPerson = row.borrowPerson
             console.log(typeof(row.borrowStatus)) // number类型
             this.editForm.borrowStatus = row.borrowStatus.toString() // 这里是个大坑 项目中也经常遇到, 如果类型和选择下拉框类型不符合，弹出的编辑界面下拉框是不会赋值的
+            this.editForm.borrowTime = row.borrowTime
+            this.editForm.returnTime = row.returnTime
             this.editBookVisible = true
           },
           addBook () {
@@ -330,6 +332,33 @@
           },
           editBook () {
             const that = this
+            const borrowTime = that.editForm.borrowTime
+            const returnTime = that.editForm.returnTime
+            const borrowStatus = that.editForm.borrowStatus
+            if(borrowStatus === '1'){// 未出借
+              that.editForm.borrowTime = ''
+              that.editForm.returnTime = ''
+              that.editForm.borrowPerson = ''
+            }else{// 已出借
+              if(borrowTime == null || borrowTime == ''){
+                that.$message({
+                  message: '请填写出借时间',
+                  type: 'error'
+                })
+                return
+              }
+              if(returnTime != null && returnTime != '') {
+                const t1 = new Date(returnTime)
+                const t2 = new Date(borrowTime)
+                if(t1.getTime() < t2.getTime()) {
+                  that.$message({
+                    message: '出借时间大于归还时间',
+                    type: 'error'
+                  })
+                  return
+                }
+              }
+            }
             axios.post("/api/bookManager/updateBookManager",that.editForm)
               .then(res => {
                 if (res.data.result === 'ok') {
