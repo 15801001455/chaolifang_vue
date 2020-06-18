@@ -28,9 +28,10 @@
           <el-button type="primary" @click="showAdd">新增</el-button>
         </el-form-item>
       </el-form>
-      <el-table :data="tableData">
+      <!-- highlight-current-row表示点击当前行的时候选中状态 -->
+      <el-table :data="tableData" :highlight-current-row="true" >
         <el-table-column prop="id" label="序号" width="140"></el-table-column>
-        <el-table-column prop="name" label="书籍名称" width="120"></el-table-column>
+        <el-table-column prop="name" label="书籍名称" width="140" show-overflow-tooltip></el-table-column>
         <el-table-column prop="borrowTime" label="借阅时间"></el-table-column>
         <el-table-column prop="returnTime" label="归还时间"></el-table-column>
         <el-table-column prop="borrowPerson" label="借阅人"></el-table-column>
@@ -40,7 +41,7 @@
             <span v-if="scope.row.borrowStatus===2">已出借</span>
           </template>
         </el-table-column>
-        <el-table-column prop="mark" label="备注"></el-table-column>
+        <el-table-column prop="mark" label="备注" show-overflow-tooltip></el-table-column>
         <el-table-column
           fixed="right"
           label="操作"
