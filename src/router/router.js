@@ -6,24 +6,18 @@ Vue.use(VueRouter);
 
 
 //1.创建组件
-import Home from '../components/Home.vue';
-import News from '../components/News.vue';
-import User from '../components/User.vue';
 import Index from "../components/Index";
+import Login from "../components/Login";
 import BookManager from "../components/BookManager";
 
 
 //2.配置路由   注意：名字
 
 const routes = [
-    { path: '/index', component: Index /*,children:[
-        {
-          path: '/bookManager',component: BookManager
-        }
-      ]*/},
+    { path: '/index', component: Index},
     { path: '/bookManager', component: BookManager },
-    { path: '/home', component: Home },
-    { path: '*', redirect: '/index' }   /*默认跳转路由*/
+    { path: '/login', component: Login},
+    { path: '*', redirect: '/login' }   /*默认跳转路由*/
 ]
 
 
