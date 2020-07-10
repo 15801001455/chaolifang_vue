@@ -1,5 +1,5 @@
 <template>
-    <div id="bookManager">
+    <div id="book">
       <!-- inline代表一行显示-->
       <el-form :inline="true">
         <el-form-item label="借阅人">
@@ -133,9 +133,9 @@
 </template>
 
 <script>
-    import axios from 'axios'
+    import api from '../api/api'
     export default {
-        name: "BookManager",
+        name: "Book",
         data() {
           return {
             recordsTotal: undefined,
@@ -251,17 +251,16 @@
         },
         methods: {
           deleteTableData (row) {
-            console.log(row.id)
             const that = this
             that.$confirm('永久删除书籍, 是否继续?', '提示', {
               confirmButtonText: '确定',
               cancelButtonText: '取消',
               type: 'warning'
             }).then(() => {
-              axios.get("/api/bookManager/deleteBookManager",{
-                params:{
+                const params = {
                   id:row.id
-                }})
+                }
+                api.deleteBook(params)
                 .then(res => {
                   if (res.data.result === 'ok') {
                     that.$message({
@@ -318,11 +317,11 @@
           },
           addBook () {
             const that = this
-            axios.post("/api/bookManager/addBookManager",that.addForm)
+            api.addBook(that.addForm)
               .then(res => {
                 if (res.data.result === 'ok') {
                   that.$message({
-                    message: '新增消息',
+                    message: '新增成功',
                     type: 'success'
                   });
                 }else if(res.data.result === 'not_ok') {
@@ -360,7 +359,7 @@
                 }
               }
             }
-            axios.post("/api/bookManager/updateBookManager",that.editForm)
+            api.updateBook(that.editForm)
               .then(res => {
                 if (res.data.result === 'ok') {
                   that.$message({
@@ -414,7 +413,7 @@
           },
           getTableData () {
             const that = this
-            axios.post("/api/bookManager/getBookManagerList",that.searchdata)
+            api.getBookList(that.searchdata)
               .then(res => {
                 if (res.data.result === 'ok') {
                   that.tableData = res.data.data

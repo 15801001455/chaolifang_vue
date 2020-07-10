@@ -21,21 +21,35 @@
 </template>
 
 <script>
+  import axios from 'axios'
   export default {
     data() {
       return {
         form: {
           username: '',
-          passpword: ''
+          password: ''
         }
       }
     },
     methods: {
       onLogin() {
-        console.log('onLogin!');
+        const that = this
+        axios.post("/api/user/login",that.form)
+          .then(res => {
+            if (res.data.result === 'ok') {
+              that.$message({
+                message: '登录成功',
+                type: 'success'
+              })
+              that.$router.push({ path: '/index', params: that.form.username})
+            }else if(res.data.result === 'not_ok') {
+              that.$message.error(res.data.message)
+            }
+          })
+          .catch(error => console.log(error))
       },
       onRegister() {
-        console.log('onRegister!');
+        console.log('开发中!');
       }
     }
   }
