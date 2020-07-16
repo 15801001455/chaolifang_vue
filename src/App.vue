@@ -5,7 +5,7 @@
   </div>
 </template>
 <script>
-  <!-- update jyc 这个watch主要是为了当第一个界面过长的时候跳转到第二个界面显示不正常  -->
+  /** update jyc 这个watch主要是为了当第一个界面过长的时候跳转到第二个界面显示不正常  **/
   export default {
     name: 'App',
     watch: {
