@@ -16,13 +16,13 @@ import Book from "../components/Book";
 
 const routes = [
   {
-    path: '/index', component: Index, children: [
+    path: '/index',name: 'index', component: Index, children: [
       {
-        path: '/book', component: Book
+        path: '/book',name: 'book', component: Book
       }
     ]
   },
-  {path: '/login', component: Login},
+  {path: '/login', name: 'login', component: Login},
   {path: '*', redirect: '/login'}   /*默认跳转路由*/
 ]
 

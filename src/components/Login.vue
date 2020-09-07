@@ -41,6 +41,7 @@
                 message: '登录成功',
                 type: 'success'
               })
+              localStorage.setItem("token",res.data.data)
               that.$router.push({ path: '/index', params: that.form.username})
             }else if(res.data.result === 'not_ok') {
               that.$message.error(res.data.message)
