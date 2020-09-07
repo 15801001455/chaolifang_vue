@@ -7,6 +7,7 @@ import axios from 'axios'
 import router from './router/router.js';
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+import api from './api/api'
 Vue.use(ElementUI)
 //每次向后端请求的时候header带上token信息
 axios.interceptors.request.use(
@@ -23,13 +24,32 @@ axios.interceptors.request.use(
 
 router.beforeEach(({name}, from, next) => {
   debugger
-  if (localStorage.getItem('token')) {
-    // 如果用户在login页面
-    if (name === 'login') {
-      next('/');
-    } else {
-      next();
+  const token = localStorage.getItem('token')
+  if (token) {
+    //验证token的正确性,防止token篡改
+    const params = {
+      mytoken:token
     }
+    api.validateToken(params)
+      .then(res => {
+        if (res.data.result === 'ok') {
+          if (name === 'login') {
+            next('/');
+          } else {
+            next()
+          }
+        }else {
+          next({name: 'login'});
+          localStorage.removeItem("token")
+          that.$message.error(res.data.message)
+        }
+      })
+      .catch(error => {
+        localStorage.removeItem("token")
+        console.log(error)
+      })
+    // 如果用户在login页面
+
   } else {
     if (name === 'login') {
       next();

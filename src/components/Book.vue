@@ -415,6 +415,7 @@
             const that = this
             api.getBookList(that.searchdata)
               .then(res => {
+                console.log(res)
                 if (res.data.result === 'ok') {
                   that.tableData = res.data.data
                   that.recordsTotal = res.data.recordsTotal
