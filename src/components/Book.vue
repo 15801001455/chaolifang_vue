@@ -325,7 +325,7 @@
                     type: 'success'
                   });
                 }else if(res.data.result === 'not_ok') {
-                  this.$message.error(res.data.message);
+                  that.$message.error(res.data.message);
                 }
               })
               .catch(error => console.log(error))

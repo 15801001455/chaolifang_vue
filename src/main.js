@@ -13,7 +13,8 @@ Vue.use(ElementUI)
 axios.interceptors.request.use(
   config => {
     if(localStorage.getItem("token")){//判断是否存在token，如果存在的话，则每个http header都加上token
-      config.headers.Authorization = `token ${localStorage.getItem("token")}`
+      //config.headers.Authorization = `token ${localStorage.getItem("token")}`
+      config.headers.token = `${localStorage.getItem("token")}`
     }
     return config;
   },
@@ -23,7 +24,7 @@ axios.interceptors.request.use(
 )
 
 router.beforeEach(({name}, from, next) => {
-  debugger
+  //debugger
   const token = localStorage.getItem('token')
   if (token) {
     //验证token的正确性,防止token篡改
