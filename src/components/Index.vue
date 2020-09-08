@@ -86,7 +86,11 @@
             } else if (res.data.result === 'not_ok') {
               that.$message.error(res.data.message)
             }
-          }).catch(error => console.log(error))
+            localStorage.removeItem("token")
+          }).catch(error => {
+            localStorage.removeItem("token")
+            console.log(error)
+        })
 
       }
     }
