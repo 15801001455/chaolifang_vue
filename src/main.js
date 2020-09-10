@@ -34,8 +34,9 @@ router.beforeEach(({name}, from, next) => {
     api.validateToken(params)
       .then(res => {
         if (res.data.result === 'ok') {
+          debugger
           if (name === 'login') {
-            next('/');
+            next('/index');
           } else {
             next()
           }
