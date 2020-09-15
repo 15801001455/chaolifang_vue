@@ -42,7 +42,9 @@
                 type: 'success'
               })
               localStorage.setItem("token",res.data.data)
-              that.$router.push({ path: '/index', params: that.form.username})
+              //update jyc params 由于动态路由也是传递params的，所以在 this.$router.push() 方法中 path不能和params一起使用，否则params将无效。需要用name来指定页面
+              //错误 path和param不能一起使用 that.$router.push({ path: '/index', params: {username:that.form.username}})
+              that.$router.push({ name: 'index', params: {username:that.form.username}})
             }else if(res.data.result === 'not_ok') {
               that.$message.error(res.data.message)
             }
