@@ -82,12 +82,13 @@
         console.log("退出系统")
         axios.get("/api/user/logout")
           .then(res => {
+            debugger
+            localStorage.removeItem("token")
             if (res.data.result === 'ok') {
-              that.$router.push({path: '/login'})
+              that.$router.push({name: 'login'})
             } else if (res.data.result === 'not_ok') {
               that.$message.error(res.data.message)
             }
-            localStorage.removeItem("token")
           }).catch(error => {
             localStorage.removeItem("token")
             console.log(error)
