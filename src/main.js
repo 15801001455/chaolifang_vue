@@ -26,32 +26,14 @@ axios.interceptors.request.use(
 router.beforeEach(({name}, from, next) => {
   //debugger
   const token = localStorage.getItem('token')
+  debugger
   if (token) {
-    //验证token的正确性,防止token篡改
-    const params = {
-      mytoken:token
-    }
-    api.validateToken(params)
-      .then(res => {
-        if (res.data.result === 'ok') {
-          debugger
-          if (name === 'login') {
-            next('/index');
-          } else {
-            next()
-          }
-        }else {
-          next({name: 'login'});
-          localStorage.removeItem("token")
-          that.$message.error(res.data.message)
-        }
-      })
-      .catch(error => {
-        localStorage.removeItem("token")
-        console.log(error)
-      })
     // 如果用户在login页面
-
+    if (name === 'login') {
+      next('/index');
+    } else {
+      next();
+    }
   } else {
     if (name === 'login') {
       next();

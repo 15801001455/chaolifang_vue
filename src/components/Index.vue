@@ -69,7 +69,12 @@
     },
     mounted() {
       debugger
-      this.username = this.$route.params.username
+/*      if(this.$route.params.username == undefined){
+        this.$message.error("登录失效,请重新登录系统")
+        localStorage.removeItem("token")
+        this.$router.push({path: '/login'})
+      }*/
+      this.username = localStorage.getItem("username")
     },
     methods: {
       logout() {
