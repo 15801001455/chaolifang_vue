@@ -328,7 +328,6 @@
                   that.$message.error(res.data.message);
                 }
               })
-              .catch(error => console.log(error))
           },
           editBook () {
             const that = this

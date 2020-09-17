@@ -21,7 +21,7 @@
 </template>
 
 <script>
-  import axios from 'axios'
+  import api from '../api/api'
   export default {
     data() {
       return {
@@ -34,7 +34,7 @@
     methods: {
       onLogin() {
         const that = this
-        axios.post("/api/user/login",that.form)
+        api.login(that.form)
           .then(res => {
             if (res.data.result === 'ok') {
               that.$message({

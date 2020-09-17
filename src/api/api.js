@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from '../utils/http'
 export default {
   deleteBook (params) {
     return axios.get("/api/book/deleteBook",{params})
@@ -12,7 +12,10 @@ export default {
   getBookList (params) {
     return axios.post("/api/book/getBookList",params)
   },
-  validateToken (params) {
-    return axios.get("/api/user/validateToken",{params})
+  logout (params) {
+    return axios.get("/api/user/logout",{params})
+  },
+  login (params) {
+    return axios.post("/api/user/login",params)
   }
 }

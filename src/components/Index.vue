@@ -60,7 +60,9 @@
 </style>
 
 <script>
-  import axios from 'axios'
+  import api from '../api/api'
+  import router from '../router/router'
+  import { Message } from 'element-ui'
   export default {
     data() {
       return {
@@ -68,32 +70,19 @@
       }
     },
     mounted() {
-      debugger
-/*      if(this.$route.params.username == undefined){
-        this.$message.error("登录失效,请重新登录系统")
-        localStorage.removeItem("token")
-        this.$router.push({path: '/login'})
-      }*/
       this.username = localStorage.getItem("username")
     },
     methods: {
       logout() {
-        const that = this
-        console.log("退出系统")
-        axios.get("/api/user/logout")
+        api.logout()
           .then(res => {
-            debugger
             localStorage.removeItem("token")
             if (res.data.result === 'ok') {
-              that.$router.push({name: 'login'})
+              router.push({name: 'login'})
             } else if (res.data.result === 'not_ok') {
-              that.$message.error(res.data.message)
+              Message.error(res.data.message)
             }
-          }).catch(error => {
-            localStorage.removeItem("token")
-            console.log(error)
-        })
-
+          })
       }
     }
   }

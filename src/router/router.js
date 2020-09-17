@@ -34,7 +34,6 @@ const router = new VueRouter({
   routes // （缩写）相当于 routes: routes
 })
 
-
 //5 <router-view></router-view> 放在 App.vue
 
 export default router;
