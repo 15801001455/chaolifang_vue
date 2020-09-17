@@ -7,7 +7,6 @@ import axios from 'axios'
 import router from './router/router.js';
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-import api from './api/api'
 Vue.use(ElementUI)
 //每次向后端请求的时候header带上token信息
 axios.interceptors.request.use(
@@ -20,6 +19,22 @@ axios.interceptors.request.use(
   },
   err => {
     return Promise.reject(err)
+  }
+)
+
+// 响应拦截
+axios.interceptors.response.use(
+  (response) => {
+    return response
+  },
+  (error) => {
+    debugger
+    const {status} = error.response
+    if (status === 400) { // 400 应该是没进入请求的方法，被拦截器拦截住了 这样要跳到登录界面
+      localStorage.removeItem("token")
+      router.push({path: '/login'})
+      ElementUI.Message.error(error.response.data)
+    }
   }
 )
 

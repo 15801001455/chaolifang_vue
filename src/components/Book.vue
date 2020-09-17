@@ -423,12 +423,12 @@
                   // 进入这里起码进入了方法
                 }
               })
-              .catch(error => {
+              /*.catch(error => {
                 console.log('进入了这里吗? 进入这里在这个系统里可以认为是登录失效等问题了，要统一重写一下这个获取数据的方法，统一跳转到登录页面最好')
                 localStorage.removeItem("token")
                 //that.$router.push({path: '/login'})
                 that.$message.error("登录失效,请重新登录")
-              })
+              })*/
           }
         },
         mounted() {
