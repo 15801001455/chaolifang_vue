@@ -17,7 +17,7 @@ function endLoading() {
 //每次向后端请求的时候header带上token信息
 axios.interceptors.request.use(
   config => {
-    startLoading()
+    //startLoading()
     if(localStorage.getItem("token")){//判断是否存在token，如果存在的话，则每个http header都加上token
       //config.headers.Authorization = `token ${localStorage.getItem("token")}`
       config.headers.token = `${localStorage.getItem("token")}`
@@ -32,12 +32,12 @@ axios.interceptors.request.use(
 // 响应拦截
 axios.interceptors.response.use(
   (response) => {
-    endLoading()
+    //endLoading()
     return response
   },
   (error) => {
     debugger
-    endLoading() // 这句不知道加的有没有用
+    //endLoading() // 这句不知道加的有没有用
     const {status} = error.response
     if (status === 400) { // 400 应该是没进入请求的方法，被拦截器拦截住了 这样要跳到登录界面
       localStorage.removeItem("token")

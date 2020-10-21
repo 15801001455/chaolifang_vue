@@ -8,12 +8,6 @@
             <el-menu-item index="/book" key="1">书籍管理</el-menu-item>
           </el-menu-item-group>
         </el-submenu>
-        <el-submenu index="1">
-          <template slot="title"><i class="el-icon-message"></i>常用功能</template>
-          <el-menu-item-group>
-            <el-menu-item index="/book" key="1">书籍管理</el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
       </el-menu>
     </el-aside>
 
