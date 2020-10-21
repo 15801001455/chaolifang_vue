@@ -5,7 +5,7 @@ import router from './router/router.js';
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 Vue.use(ElementUI)
-
+Vue.prototype.$message = ElementUI.Message  //这样界面上就可以直接用 this.$message 弹出各种消息了 main.js中的都是全局设置 
 
 router.beforeEach(({name}, from, next) => {
   //debugger
