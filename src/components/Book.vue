@@ -5,6 +5,12 @@
         <el-form-item label="借阅人">
           <el-input v-model="searchdata.borrowPerson"></el-input>
         </el-form-item>
+        <el-form-item label="图书编号">
+          <el-input v-model="searchdata.id"></el-input>
+        </el-form-item>
+        <el-form-item label="图书名称">
+          <el-input v-model="searchdata.name"></el-input>
+        </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="searchdata.borrowStatus" placeholder="状态" clearable>
             <el-option label="未出借" value="1"></el-option>
@@ -148,7 +154,9 @@
               pageIndex: 1,
               pageSize: 10,
               borrowTimeStart: '',
-              borrowTimeEnd: ''
+              borrowTimeEnd: '',
+              id: '',
+              name: ''
             },
             borrowTime: [],
             pickerOptions: {
