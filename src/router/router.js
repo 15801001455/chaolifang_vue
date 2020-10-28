@@ -30,7 +30,7 @@ const routes = [
 //3.实例化VueRouter  注意：名字
 
 const router = new VueRouter({
-  mode: 'history',   /*hash模式改为history*/
+  mode: 'hash',   /*hash模式改为history,后来又改为hash模式,要不刷新页面会出现404情况*/
   routes // （缩写）相当于 routes: routes
 })
 
