@@ -2,9 +2,9 @@ var path = require('path')
 var webpack = require('webpack')
 
 module.exports = {
-  entry: './src/main.js',
-  output: {
-    path: path.resolve(__dirname, './dist'),
+  entry: './src/main.js',  //打包文件入口  webpack文件详解:https://www.cnblogs.com/singledogpro/p/12030550.html
+  output: {                //打包文件出口
+    path: path.resolve(__dirname, './dist'), //将相对路径转成绝对路径 __dirname指的是当前文件【webpack.config.js】的上一级路径
     publicPath: '/dist/',
     filename: 'build.js'
   },
