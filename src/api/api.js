@@ -17,5 +17,8 @@ export default {
   },
   login (params) {
     return axios.post("/api/user/login",params)
+  },
+  getOrgTree (params) {
+    return axios.get("/api/org/getOrgTree",{params})
   }
 }

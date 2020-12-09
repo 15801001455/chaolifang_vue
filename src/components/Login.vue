@@ -9,6 +9,7 @@
         <el-form-item label="密码">
           <el-input v-model="form.password" @keyup.enter.native="onLogin"></el-input>
         </el-form-item>
+        <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
         <el-form-item>
           <el-button type="primary" @click="onLogin">登录</el-button>
           <el-button type="primary" @click="onRegister">注册</el-button>
@@ -28,10 +29,38 @@
         form: {
           username: '',
           password: ''
-        }
+        },
+        treeData: undefined,
+        defaultProps: {
+          children: 'children',
+          label: 'name'
+        },
+
       }
     },
+    mounted() {
+      this.getOrgTree()
+    },
     methods: {
+      handleNodeClick(data){
+        console.log(data)
+      },
+      getOrgTree () {
+        const that = this
+        api.getOrgTree()
+          .then(res => {
+            if (res.data.result === 'ok') {
+              console.log(res.data.data);
+              that.treeData = res.data.data
+              that.$message({
+                message: '获取组织架构树成功',
+                type: 'success'
+              });
+            }else if(res.data.result === 'not_ok') {
+              that.$message.error(res.data.message);
+            }
+          })
+      },
       onLogin() {
         const that = this
         api.login(that.form)
